@@ -1,0 +1,8 @@
+org\foi\nwtis\hsostaric\konfiguracije\KonfiguracijaApstraktna.class
+org\foi\nwtis\hsostaric\konfiguracije\KonfiguracijaTXT.class
+org\foi\nwtis\hsostaric\konfiguracije\NeispravnaKonfiguracija.class
+org\foi\nwtis\hsostaric\konfiguracije\NemaKonfiguracije.class
+org\foi\nwtis\hsostaric\konfiguracije\KonfiguracijaBIN.class
+org\foi\nwtis\hsostaric\konfiguracije\KonfiguracijaJSON.class
+org\foi\nwtis\hsostaric\konfiguracije\KonfiguracijaXML.class
+org\foi\nwtis\hsostaric\konfiguracije\Konfiguracija.class

@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./predlozak.xhtml" 
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="naslov">
+        Aktivnost 1
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form>
+            <div class="vidljiv">
+                <h:outputText style="margin: 0 auto;" value="Korisnici"/><br/>
+                <h:panelGroup>
+                    <h:selectOneMenu id="odabraniKorisnik" value="#{korisniciAerodroma.odabraniKorisnik}" >
+                        <f:selectItems value="#{korisniciAerodroma.korisnici}" var="k" itemValue="#{k.korIme}" itemLabel="#{k.ime} #{k.prezime} (#{k.myairportsList.size()})"/>
+                    </h:selectOneMenu>
+                    <h:commandButton id="pretragaAerodroma" action="#{korisniciAerodroma.dohvatiAerodromeKorisnika()}" value="Prikaži korisnikove aerodrome">
+                        <f:ajax event="action" execute="odabraniKorisnik" render="@form" />
+                    </h:commandButton>
+                </h:panelGroup>
+                <br/>
+                <h:outputText styleClass="greska" id="poruka" value="#{korisniciAerodroma.poruka}"/>
+            </div>
+            <br/>
+            <div id="pogled2" class="#{korisniciAerodroma.vidljivostDrugogBloka}">
+                <h:outputText style="margin: 0 auto;" value="Korisnikovi aerodromi"/>
+                <h:outputText styleClass="praznaLinija" value="&nbsp;"/>
+                <p:dataTable id="aerodromiKorisnika" value="#{korisniciAerodroma.aerodromiKorisnika}" var="a" rows="10"
+                             paginator="true"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink}
+                             {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}
+                             {RowsPerPageDropdown}"
+                             rowsPerPageTemplate="5,10,15,30">
+                    <p:column>
+                        <f:facet name="header">ICAO</f:facet>#{a.ident.ident}
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">Naziv</f:facet>#{a.ident.name}
+                    </p:column>
+                    <p:column> <f:facet name="header">Država</f:facet>#{a.ident.isoCountry}</p:column>
+                    <p:column>
+                        <f:facet name="header">Broj korisnika</f:facet>#{a.ident.myairportsList.size()}
+                    </p:column>
+                    <p:column> <f:facet name="header">Broj preuzetih dana</f:facet>#{a.ident.myairportslogList.size()}</p:column>
+                    <p:column>
+                        <f:facet name="header">Broj preuzetih letova</f:facet>#{a.ident.airplanesList.size()}
+                    </p:column>
+                    <p:column> <f:facet name="header">Prikaži datume za aerodrom</f:facet><h:commandButton action="#{korisniciAerodroma.formatirajLetove(a.ident.myairportslogList)}" value="Prikaži datume">
+                            <f:ajax event="action" render="@form"/>
+                        </h:commandButton></p:column>
+                </p:dataTable>  
+                <br/>
+                <h:outputText styleClass="greska" id="porukaLetova" value="#{korisniciAerodroma.prazniLetovi}"/>
+                <h:outputText styleClass="praznaLinija" value="&nbsp;"/>
+            </div>
+            <div class="#{korisniciAerodroma.vidljivostTrecegBloka}">
+                <h:outputText style="margin: 0 auto;" value="Dani preuzetih aerodroma"/>
+                <h:outputText styleClass="praznaLinija" value="&nbsp;"/>
+            </div></h:form>
+    </ui:define>
+
+</ui:composition>

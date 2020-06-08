@@ -1,0 +1,134 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package org.foi.nwtis.hsostaric.web.zrna;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.inject.Named;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.servlet.ServletContext;
+import lombok.Getter;
+import lombok.Setter;
+import org.foi.nwtis.hsostaric.ejb.eb.Airports;
+import org.foi.nwtis.hsostaric.ejb.eb.Korisnici;
+import org.foi.nwtis.hsostaric.ejb.sb.Meteorolog;
+import org.foi.nwtis.hsostaric.ejb.sb.UpravljanjeDodavanjemAerodroma;
+import org.foi.nwtis.hsostaric.konfiguracije.bp.BP_Konfiguracija;
+import org.foi.nwtis.rest.podaci.MeteoPodaci;
+
+@Named(value = "dodavanjeAerodromaKorisniku")
+@ViewScoped
+public class DodavanjeAerodromaKorisniku implements Serializable {
+
+    @Inject
+    ServletContext context;
+    @Getter
+    @Setter
+    BP_Konfiguracija bpk;
+    @Getter
+    @Setter
+    private String vidljivostDrugogBloka = "";
+
+    @Inject
+    UpravljanjeDodavanjemAerodroma upravljac;
+    @Inject
+    Meteorolog meteorolog;
+    @Getter
+    @Setter
+    private List<Korisnici> listaKorisnika = new ArrayList<>();
+    @Getter
+    @Setter
+    private Korisnici odabraniKorisnik;
+
+    @Getter
+    @Setter
+    private String porukaOdabranogKorisnika = "";
+
+    @Getter
+    @Setter
+    private String nazivAerodroma = "";
+
+    @Getter
+    @Setter
+    List<Airports> listaAerodroma = new ArrayList();
+
+    @Getter
+    @Setter
+    private String porukaNemaAerodroma = "";
+    @Setter
+    @Getter
+    private String apiKeyOWM = "";
+    @Getter
+    @Setter
+    private MeteoPodaci meteoPodaci = new MeteoPodaci();
+
+    public DodavanjeAerodromaKorisniku() {
+    }
+
+    @PostConstruct
+    public void init() {
+        sakrijDrugiBlok();
+        dohvatiKorisnike();
+        ucitajKonfiguraciju();
+    }
+
+    private void sakrijDrugiBlok() {
+        vidljivostDrugogBloka = "skriven";
+    }
+
+    private void prikaziDrugiBlok() {
+        vidljivostDrugogBloka = "vidljiv";
+    }
+
+    private void dohvatiKorisnike() {
+        listaKorisnika = upravljac.dohvatiKorisnikeBazePodataka();
+    }
+
+    public String postaviKorisnika(Korisnici korisnik) {
+        odabraniKorisnik = korisnik;
+        ispisiKorisnika();
+        return "";
+    }
+
+    private void ispisiKorisnika() {
+        porukaOdabranogKorisnika = "Odabran je korisnik: " + odabraniKorisnik.getIme() + " " + odabraniKorisnik.getPrezime();
+    }
+
+    public String pretraziAerodrome(boolean jpql) {
+        listaAerodroma = upravljac.dohvatiAerodromePremaNazivu(nazivAerodroma, jpql);
+        if (listaAerodroma.isEmpty()
+                || listaAerodroma == null) {
+            sakrijDrugiBlok();
+            porukaNemaAerodroma = "Nisu pronađeni nikakvi rezultati.";
+        } else {
+            dohvatiKorisnike();
+            prikaziDrugiBlok();
+            porukaNemaAerodroma = "";
+        }
+        return "";
+    }
+
+    private void ucitajKonfiguraciju() {
+        bpk = (BP_Konfiguracija) context.getAttribute("BP_Konfig");
+        apiKeyOWM = bpk.getKonfig()
+                .dajPostavku("OpenWeatherMap.apikey");
+        System.out.println("Api key je: "+apiKeyOWM);
+    }
+
+    public String dajTemperaturuAerodroma(Airports aerodrom) {
+      return meteorolog
+               .dohvatiTemperaturu(apiKeyOWM, aerodrom);
+  
+    }
+    
+    public String dajVlaguAerodroma(Airports aerodrom) {
+       return meteorolog.dohvatiVlagu(apiKeyOWM, aerodrom);
+ 
+    }
+}

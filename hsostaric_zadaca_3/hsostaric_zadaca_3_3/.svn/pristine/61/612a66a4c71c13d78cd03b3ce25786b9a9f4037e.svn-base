@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./predlozak.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="naslov">
+        Aktivnost 2
+    </ui:define>
+    <ui:define name="content">
+        <h:form>
+            <div id="blokPrvi" class="vidljiv">
+                <h:outputText value="Korisnici (P1)" />
+                <h:outputText value="&nbsp;" styleClass="praznaLinija"/>
+                <h:outputText >Broj aerodroma: Vrijeme zadnjeg osvježavanja :</h:outputText>
+                <h:outputText value="&nbsp;" styleClass="praznaLinija"/>
+                <p:dataTable id="korisnici" value="#{dodavanjeAerodromaKorisniku.listaKorisnika}" var="k" rows="10"
+                             paginator="true"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink}
+                             {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}
+                             {RowsPerPageDropdown}"
+                             rowsPerPageTemplate="5,10,15,30">
+                    <p:column>
+                        <f:facet name="header">Ime</f:facet>#{k.ime}
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">Prezime</f:facet>#{k.prezime}
+                    </p:column>
+                    <p:column> <f:facet name="header">Broj aerodroma</f:facet>#{k.myairportsList.size()}</p:column>
+                    <p:column> <f:facet name="header">Odaberi korisnika</f:facet><h:commandButton action="#{dodavanjeAerodromaKorisniku.postaviKorisnika(k)}" value="Odaberi korisnika">
+                            <f:ajax event="action" render="@form"/>
+                        </h:commandButton></p:column>
+                </p:dataTable>  
+                <br/>
+                <h:outputText id="ispisOdabranog" value="#{dodavanjeAerodromaKorisniku.porukaOdabranogKorisnika}"/>
+                <h:outputText value="&nbsp;" styleClass="praznaLinija"/>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="Naziv aerodroma: "/>
+                    <h:inputText id="nazivAerodroma" value="#{dodavanjeAerodromaKorisniku.nazivAerodroma}"/>
+                    <h:commandButton id="traziJPQL" value="Potraži JPQL" action="#{dodavanjeAerodromaKorisniku.pretraziAerodrome(true)}">
+                        <f:ajax event="action" execute="nazivAerodroma" render="@form"/>
+                    </h:commandButton>
+                    <h:commandButton id="traziCApi" value="Potraži CApi" action="#{dodavanjeAerodromaKorisniku.pretraziAerodrome(false)}">
+                        <f:ajax event="action" execute="nazivAerodroma" render="@form"/>
+                    </h:commandButton>
+                </h:panelGrid>
+                <h:outputText value="&nbsp;" styleClass="praznaLinija" />
+                <h:outputText id="postojeAerodromi" styleClass="greska" value="#{dodavanjeAerodromaKorisniku.porukaNemaAerodroma}" />
+            </div>
+            <h:outputText value="&nbsp;" styleClass="praznaLinija"/>
+            <div id="blokDrugi" class="#{dodavanjeAerodromaKorisniku.vidljivostDrugogBloka}">
+                <h:outputText value="Filtrirani aerodromi (P2)"/>
+                <h:outputText value="&nbsp;" styleClass="praznaLinija"/>
+                <p:dataTable id="aerodromiBaze" value="#{dodavanjeAerodromaKorisniku.listaAerodroma}" var="a" rows="10"
+                             paginator="true"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink}
+                             {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}
+                             {RowsPerPageDropdown}"
+                             rowsPerPageTemplate="5,10,15,30">
+                    <p:column>
+                        <f:facet name="header">Identifikator</f:facet>#{a.ident}
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">Naziv</f:facet>#{a.name}
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">Država</f:facet>#{a.isoCountry}
+                    </p:column>
+                      <p:column>
+                          <f:facet name="header">Temperatura</f:facet>#{dodavanjeAerodromaKorisniku.dajTemperaturuAerodroma(a)}
+                    </p:column>
+                     <p:column>
+                         <f:facet name="header">Vlaga</f:facet>#{dodavanjeAerodromaKorisniku.dajVlaguAerodroma(a)}
+                    </p:column>
+                            <p:column> <f:facet name="header">Dodaj aerodrom</f:facet><h:commandButton >
+                                    Dodaj aerodrom
+                        </h:commandButton></p:column>
+                </p:dataTable> 
+            </div>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

@@ -1,0 +1,51 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package org.foi.nwtis.hsostaric.ejb.sb;
+
+import java.util.ArrayList;
+import java.util.List;
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateful;
+import org.foi.nwtis.hsostaric.ejb.eb.Airports;
+import org.foi.nwtis.hsostaric.ejb.eb.Korisnici;
+
+/**
+ *
+ * @author Hrvoje-PC
+ */
+@Stateful
+@LocalBean
+public class UpravljanjeDodavanjemAerodroma {
+
+    @EJB
+    KorisniciFacadeLocal korisniciFacadeLocal;
+
+    @EJB
+    AirportsFacadeLocal airportsFacadeLocal;
+
+    public UpravljanjeDodavanjemAerodroma() {
+    }
+
+    public List<Korisnici> dohvatiKorisnikeBazePodataka() {
+        return korisniciFacadeLocal.findAll();
+    }
+
+    public List<Airports> dohvatiAerodromePremaNazivu(String naziv, boolean jpql) {
+        System.out.println("Naziv: " + naziv);
+        List<Airports> aerodromi = new ArrayList<>();
+        if (naziv != null) {
+            if (!naziv.equals("")) {
+                if (jpql == true) {
+                    aerodromi = airportsFacadeLocal.findByName(naziv);
+                } else {
+                    aerodromi = airportsFacadeLocal.findByNameCApi(naziv);
+                }
+            }
+        }
+        return aerodromi;
+    }
+}
